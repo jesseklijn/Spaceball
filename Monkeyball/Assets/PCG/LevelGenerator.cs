@@ -6,8 +6,10 @@ using Random = UnityEngine.Random;
 
 public class LevelGenerator : MonoBehaviour
 {
+    private GameObject tileParent;
     public GameObject tilePrefab;
     public List<Material> materials;
+    public bool useSeed = false;
     public int seed = 1;
 
     private float ballSpeed = 3, timeGoal = 60;
@@ -15,23 +17,33 @@ public class LevelGenerator : MonoBehaviour
     private const float DIVIDER = 4;
     private const int POSSIBLE_ADJACENT = 4;
 
-    public float lengthOfPath = 0;
+    private float lengthOfPath = 0;
     private int sizeX, sizeZ;
 
     public Vector3 startPos, goalPos;
 
 
-    public bool isSolved = false;
+    private bool isSolved = false;
 
     private int[] rowDelta = { -1, 1, 0, 0 };
     private int[] colDelta = { 0, 0, -1, 1 };
 
-    public int[,] tilePos;
+    private int[,] tilePos;
 
     //public List<Tile> tileGrid = new List<Tile>();
 
     // Use this for initialization
     private void Awake()
+    {
+
+    }
+
+    public void ClearLevel()
+    {
+        DestroyImmediate(tileParent);
+
+    }
+    public void Generate()
     {
         //Calculate length of path
         lengthOfPath = timeGoal / ballSpeed;
@@ -39,15 +51,19 @@ public class LevelGenerator : MonoBehaviour
 
         sizeX = sizeZ = (int)lengthOfPath;
         tilePos = new int[sizeX, sizeZ];
-        //Set seed
-        Random.InitState(seed);
+        //Set seed by inspector or randomly.
+        if (useSeed == true)
+            Random.InitState(seed);
+        else
+            Random.InitState(Random.Range(0, 36000));
 
         //Assign start position
         startPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
         goalPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
 
 
-        do {
+        do
+        {
             startPos = GenerateStartPosition(startPos);
 
             ////Assign goal position 
@@ -56,12 +72,15 @@ public class LevelGenerator : MonoBehaviour
                 goalPos = GenerateStartPosition(goalPos);
 
             }
-        } while (((goalPos.x - startPos.x) + (goalPos.z - startPos.z)) % 2 != 0 || AccrossFromGoal(startPos));
+        } while (((goalPos.x - startPos.x) + (goalPos.z - startPos.z)) % 2 != 0 || (int)goalPos.x < 0 | (int)goalPos.z < 0 || (int)startPos.x < 0 | (int)startPos.z < 0 || AccrossFromGoal(startPos));
 
         //Add start and goal position to position list
         AddPositionToList(startPos);
         //AddPositionToList(goalPos);
-        tilePos[(int) goalPos.x, (int) goalPos.z] = 3;
+        if (!OutOfBounds(new Vector3(goalPos.x, 0, goalPos.z)))
+        {
+            tilePos[(int) goalPos.x, (int) goalPos.z] = 3;
+        }
 
         //Algorithm - Create Path from start to goal position
         FindPath(1, (int)startPos.x, (int)startPos.z);
@@ -88,8 +107,13 @@ public class LevelGenerator : MonoBehaviour
 
     private bool AddPositionToList(Vector3 position)
     {
-        tilePos[(int)position.x, (int)position.z] = 1;
-        return true;
+        if (!OutOfBounds(new Vector3(position.x, 0, position.z)))
+        {
+            tilePos[(int)position.x, (int)position.z] = 1;
+            return true;
+
+        }
+        else return false;
     }
 
     void FindPath(int moveNr, int x, int z)
@@ -105,15 +129,15 @@ public class LevelGenerator : MonoBehaviour
 
 
         //Not Solved so try
-        if (Random.Range(0,10) >= 5)
+        if (Random.Range(0, 10) >= 5)
         {
-            rowDelta = new [] { 1, 0, 0, -1 };
-            colDelta = new [] { 0, 1, -1, 0 };
+            rowDelta = new[] { 1, 0, 0, -1 };
+            colDelta = new[] { 0, 1, -1, 0 };
         }
         else
         {
-            rowDelta = new [] { -1, 1, 0, 0 };
-            colDelta = new [] { 0, 0, -1, 1 };
+            rowDelta = new[] { -1, 1, 0, 0 };
+            colDelta = new[] { 0, 0, -1, 1 };
         }
         for (int i = 0; i < POSSIBLE_ADJACENT; i++)
         {
@@ -189,11 +213,14 @@ public class LevelGenerator : MonoBehaviour
 
     void GenerateTiles()
     {
+        GameObject parent = new GameObject("TileMap");
+        tileParent = parent;
         for (int x = 0; x < sizeX; x++)
         {
             for (int z = 0; z < sizeZ; z++)
             {
-                GameObject instance = Instantiate(tilePrefab, new Vector3(x, 0, z), Quaternion.identity);
+
+                GameObject instance = Instantiate(tilePrefab, new Vector3(x, 0, z), Quaternion.identity, parent.transform);
                 if (tilePos[x, z] == 1)
                 {
                     instance.GetComponent<MeshRenderer>().material = materials[0];

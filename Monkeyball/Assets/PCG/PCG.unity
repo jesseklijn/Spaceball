@@ -240,11 +240,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: a158e05164f16de4e98f59847890d67a, type: 2}
   - {fileID: 2100000, guid: 757af84fdc783d5429d4a230fbf8bba0, type: 2}
   - {fileID: 2100000, guid: 52480f656f59a6944b07cfbf544862e1, type: 2}
+  useSeed: 0
   seed: 2
-  lengthOfPath: 0
-  startPos: {x: 2, y: 0, z: 17}
-  goalPos: {x: 13, y: 0, z: 10}
-  isSolved: 0
+  startPos: {x: 0, y: 0, z: 9}
+  goalPos: {x: 7, y: 0, z: 0}
 --- !u!1 &2032051408
 GameObject:
   m_ObjectHideFlags: 0
