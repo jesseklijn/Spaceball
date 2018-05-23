@@ -40,6 +40,10 @@ public class LevelGenerator : MonoBehaviour
 
     public void ClearLevel()
     {
+        if (tileParent == null)
+        {
+            tileParent = GameObject.Find("TileMap");
+        }
         DestroyImmediate(tileParent);
 
     }
@@ -55,7 +59,10 @@ public class LevelGenerator : MonoBehaviour
         if (useSeed == true)
             Random.InitState(seed);
         else
-            Random.InitState(Random.Range(0, 36000));
+        {
+            seed = Random.Range(0, 36000);
+            Random.InitState(seed);
+        }
 
         //Assign start position
         startPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
