@@ -58,18 +58,25 @@ public class SaveLoad : MonoBehaviour
         if (File.Exists(Application.persistentDataPath + "/" + profile + ".gd"))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/Scene" + level + profile + ".gd", FileMode.Open); 
-            Gamedata data = (Gamedata)bf.Deserialize(file);
-            file.Close();
+            if (File.Exists(Application.persistentDataPath + "/Scene" + level + profile + ".gd"))
+            {
+                FileStream file = File.Open(Application.persistentDataPath + "/Scene" + level + profile + ".gd",
+                    FileMode.Open);
+                Gamedata data = (Gamedata) bf.Deserialize(file);
+                file.Close();
 
 
                 scenemaster = GameObject.FindGameObjectWithTag("Scenemaster").GetComponent<Scenemaster>();
                 scenemaster.record = data.time;
                 gamestats.LevelScore = data.LevelScore;
                 gamestats.LevelS = data.LevelS;
-            
-            Debug.Log(data.time);
-           
+
+                Debug.Log(data.time);
+            }
+        }
+        else
+        {
+            Debug.Log("Doesnt exist");
         }
     }
     public void Load(string profile)

@@ -106,6 +106,7 @@ public class Scenemaster : MonoBehaviour
     }
     public void a()
     {
+        
         gamestats = GameObject.FindGameObjectWithTag("gamestats").GetComponent<Gamestats>();
         soundeffects.clip = gamestats.a;
     }

@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Exit : MonoBehaviour
 {
-   public  GameObject firework;
-    GameObject[] fireworks;
+    public GameObject firework;
+    public GameObject[] fireworks;
     GameObject gameguiobject;
     public GameGUI gameGUI;
     Scenemaster scenemaster;
@@ -31,6 +31,7 @@ public class Exit : MonoBehaviour
         }
         if (gamestats != null)
         {
+            
             saveload.LoadLevel(gamestats.profile_name, Application.loadedLevel);
         }
     }
@@ -56,6 +57,7 @@ public class Exit : MonoBehaviour
             else if (scenemaster.timer < scenemaster.record)
             {
                 scenemaster.record = scenemaster.timer;
+
                 for (int i = 0; i < fireworks.Length; i++)
                 {
                     Instantiate(firework, fireworks[i].transform.position, Quaternion.identity);
