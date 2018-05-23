@@ -30,8 +30,6 @@ public class LevelGenerator : MonoBehaviour
 
     private int[,] tilePos;
 
-    //public List<Tile> tileGrid = new List<Tile>();
-
     // Use this for initialization
     private void Awake()
     {
@@ -68,26 +66,19 @@ public class LevelGenerator : MonoBehaviour
         startPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
         goalPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
 
-
+        float distance;
+        startPos = GenerateStartPosition(startPos);
         do
         {
-            startPos = GenerateStartPosition(startPos);
+            goalPos = GenerateStartPosition(goalPos);
+            distance = (goalPos.x - startPos.x) + (goalPos.z - startPos.z);
 
-            ////Assign goal position 
-            while (goalPos == new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER) | goalPos == startPos)
-            {
-                goalPos = GenerateStartPosition(goalPos);
-
-            }
-        } while (((goalPos.x - startPos.x) + (goalPos.z - startPos.z)) % 2 != 0 || (int)goalPos.x < 0 | (int)goalPos.z < 0 || (int)startPos.x < 0 | (int)startPos.z < 0 || AccrossFromGoal(startPos));
+        } while (distance % 2 != 0 || distance < 3 || OutOfBounds(goalPos) || OutOfBounds(startPos)); //|| AccrossFromGoal(startPos));
 
         //Add start and goal position to position list
         AddPositionToList(startPos);
-        //AddPositionToList(goalPos);
-        if (!OutOfBounds(new Vector3(goalPos.x, 0, goalPos.z)))
-        {
-            tilePos[(int) goalPos.x, (int) goalPos.z] = 3;
-        }
+
+        tilePos[(int) goalPos.x, (int) goalPos.z] = 3;
 
         //Algorithm - Create Path from start to goal position
         FindPath(1, (int)startPos.x, (int)startPos.z);
@@ -174,11 +165,10 @@ public class LevelGenerator : MonoBehaviour
     bool AdjacentCheck(int x, int z, int moveNr)
     {
         int adjacentTiles = 0;
-        for (int i = 0; i < POSSIBLE_ADJACENT; i++)
+        for (int i = 0; i < rowDelta.Length; i++)
         {
             int newX = x + rowDelta[i];
             int newZ = z + colDelta[i];
-
 
             if (!OutOfBounds(new Vector3(newX, 0, newZ)))
             {
@@ -203,7 +193,7 @@ public class LevelGenerator : MonoBehaviour
 
             if (!OutOfBounds(new Vector3(newX, 0, newZ)))
             {
-                if (newX == goalPos.x && newZ == goalPos.z)
+                if (tilePos[newX, newZ] == 3)
                 {
                     return true;
                 }
