@@ -44,21 +44,19 @@ public class LevelGenerator : MonoBehaviour
 
         //Assign start position
         startPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
-        //goalPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
+        goalPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
 
 
         do {
             startPos = GenerateStartPosition(startPos);
 
             ////Assign goal position 
-            //while (goalPos == new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER) | goalPos == startPos)
-            //{
-            //    goalPos = GenerateStartPosition(goalPos);
+            while (goalPos == new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER) | goalPos == startPos)
+            {
+                goalPos = GenerateStartPosition(goalPos);
 
-            //}
-
-            goalPos = startPos + new Vector3(3, 0, 5);
-        } while (OutOfBounds(goalPos) || OutOfBounds(startPos));
+            }
+        } while (((goalPos.x - startPos.x) + (goalPos.z - startPos.z)) % 2 != 0 || AccrossFromGoal(startPos));
 
         //Add start and goal position to position list
         AddPositionToList(startPos);
@@ -160,7 +158,28 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
-        return adjacentTiles > 1;
+        return adjacentTiles > 1 || AccrossFromGoal(new Vector3(x, 0, z));
+    }
+
+    bool AccrossFromGoal(Vector3 vector)
+    {
+        int[] otherRowDelta = { 1, -1, 1, -1 };
+        int[] otherColDelta = { 1, -1, -1, 1 };
+        for (int i = 0; i < POSSIBLE_ADJACENT; i++)
+        {
+            int newX = (int)vector.x + otherRowDelta[i];
+            int newZ = (int)vector.z + otherColDelta[i];
+
+            if (!OutOfBounds(new Vector3(newX, 0, newZ)))
+            {
+                if (newX == goalPos.x && newZ == goalPos.z)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     bool OutOfBounds(Vector3 vector)
