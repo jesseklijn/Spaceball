@@ -9,6 +9,7 @@ public class LevelGenerator : MonoBehaviour
     private GameObject tileParent;
     public GameObject tilePrefab;
     public List<Material> materials;
+    public List<GameObject> path;
     public bool useSeed = false;
     public int seed = 1;
 
@@ -73,12 +74,12 @@ public class LevelGenerator : MonoBehaviour
             goalPos = GenerateStartPosition(goalPos);
             distance = (goalPos.x - startPos.x) + (goalPos.z - startPos.z);
 
-        } while (distance % 2 != 0 || distance < 3 || OutOfBounds(goalPos) || OutOfBounds(startPos)); //|| AccrossFromGoal(startPos));
+        } while (distance % 2 != 0 || distance < 3 || distance >= 19 || OutOfBounds(goalPos) || OutOfBounds(startPos)); //|| AccrossFromGoal(startPos));
 
         //Add start and goal position to position list
         AddPositionToList(startPos);
 
-        tilePos[(int) goalPos.x, (int) goalPos.z] = 3;
+        tilePos[(int)goalPos.x, (int)goalPos.z] = 3;
 
         //Algorithm - Create Path from start to goal position
         FindPath(1, (int)startPos.x, (int)startPos.z);
@@ -87,6 +88,7 @@ public class LevelGenerator : MonoBehaviour
         if (isSolved)
         {
             GenerateTiles();
+            GenerateObstacle(Random.Range(0, 3));
         }
     }
 
@@ -210,6 +212,9 @@ public class LevelGenerator : MonoBehaviour
 
     void GenerateTiles()
     {
+        //Clear previous path collection
+        path.Clear();
+
         GameObject parent = new GameObject("TileMap");
         tileParent = parent;
         for (int x = 0; x < sizeX; x++)
@@ -217,26 +222,57 @@ public class LevelGenerator : MonoBehaviour
             for (int z = 0; z < sizeZ; z++)
             {
 
+                //Spawn all tiles, based on their appropiate role. Being either a path, goal, start or.. Nothing, by default.
                 GameObject instance = Instantiate(tilePrefab, new Vector3(x, 0, z), Quaternion.identity, parent.transform);
                 if (tilePos[x, z] == 1)
                 {
                     instance.GetComponent<MeshRenderer>().material = materials[0];
+                    instance.GetComponent<Tile>().type = Tile.tileType.Path;
+                    path.Add(instance);
                 }
                 else
                 {
                     instance.GetComponent<MeshRenderer>().material = materials[3];
+                   //Is by default none
+                    path.Add(instance);
                 }
 
                 if (startPos.x == x && startPos.z == z)
                 {
                     instance.GetComponent<MeshRenderer>().material = materials[1];
+                    instance.GetComponent<Tile>().type = Tile.tileType.Start;
+                    path.Add(instance);
                 }
                 if (tilePos[x, z] == 3)
                 {
                     instance.GetComponent<MeshRenderer>().material = materials[2];
+                    instance.GetComponent<Tile>().type = Tile.tileType.Goal;
                 }
 
             }
         }
+    }
+
+    void GenerateObstacle(int amountOfObstacles)
+    {
+    
+        if (amountOfObstacles > 0)
+        {
+            int obstaclesInPath = 0;
+            for (int i = 0; i < amountOfObstacles; i++)
+            {
+                while (obstaclesInPath != amountOfObstacles)
+                {
+                    int randomIndex = Random.Range(0, path.Count - 1);
+                    if (path[randomIndex].GetComponent<Tile>().type == Tile.tileType.Path)
+                    {
+                        path[randomIndex].GetComponent<Tile>().type = Tile.tileType.Obstacle;
+                        path[randomIndex].GetComponent<MeshRenderer>().material = materials[4];
+                        obstaclesInPath++;
+                    }
+                }
+            }
+        }
+
     }
 }

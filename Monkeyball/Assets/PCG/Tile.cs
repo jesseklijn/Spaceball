@@ -8,6 +8,7 @@ public class Tile : MonoBehaviour {
         Path,
         Start,
         Goal,
+        Obstacle,
         None
     }
 
