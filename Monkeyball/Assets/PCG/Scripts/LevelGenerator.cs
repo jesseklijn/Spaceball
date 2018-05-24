@@ -14,7 +14,7 @@ public class LevelGenerator : MonoBehaviour
     public bool useSeed = false;
     public int seed = 1;
 
-    public float ballSpeed = 3, timeGoal = 60;
+    public float ballSpeed = 3, timeGoal = 60, maxObstacles = 3;
 
     private const float DIVIDER = 4;
     private const int POSSIBLE_ADJACENT = 4;
@@ -85,7 +85,7 @@ public class LevelGenerator : MonoBehaviour
         if (isSolved)
         {
             GenerateTiles();
-            GenerateObstacle(Random.Range(0, 3));
+            GenerateObstacle(Random.Range(0, (int)maxObstacles));
         }
     }
 

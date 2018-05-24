@@ -9,15 +9,21 @@ public class LevelEditor : Editor
     {
         //Draw the basic inspector
         DrawDefaultInspector();
-
-        //Creates a button in the inspector of levelgenerator.
-        LevelGenerator levelGenerator = (LevelGenerator)target;
-        if (GUILayout.Button("Build Level"))
+        GUILayout.Box("Builds the level with a random seed when clicked.");
         {
-            //First clear the level, even if there is no level, and generate a level
-            levelGenerator.ClearLevel();
-            levelGenerator.Generate();
-          
+            
+            //Creates a button in the inspector of levelgenerator.
+            LevelGenerator levelGenerator = (LevelGenerator)target;
+            if (GUILayout.Button("Build"))
+            {
+                //First clear the level, even if there is no level, and generate a level
+                levelGenerator.ClearLevel();
+                levelGenerator.Generate();
+
+            }
+
         }
+     
+
     }
 }
