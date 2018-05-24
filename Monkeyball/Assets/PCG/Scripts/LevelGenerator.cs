@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class LevelGenerator : MonoBehaviour
 {
+    #region fields
     private GameObject tileParent;
     public GameObject tilePrefab;
     public List<Material> materials;
@@ -13,7 +14,7 @@ public class LevelGenerator : MonoBehaviour
     public bool useSeed = false;
     public int seed = 1;
 
-    private float ballSpeed = 3, timeGoal = 60;
+    public float ballSpeed = 3, timeGoal = 60;
 
     private const float DIVIDER = 4;
     private const int POSSIBLE_ADJACENT = 4;
@@ -30,13 +31,8 @@ public class LevelGenerator : MonoBehaviour
     private int[] colDelta = { 0, 0, -1, 1 };
 
     private int[,] tilePos;
-
-    // Use this for initialization
-    private void Awake()
-    {
-
-    }
-
+    #endregion
+   
     public void ClearLevel()
     {
         if (tileParent == null)
@@ -48,6 +44,7 @@ public class LevelGenerator : MonoBehaviour
     }
     public void Generate()
     {
+        #region Initializing
         //Calculate length of path
         lengthOfPath = timeGoal / ballSpeed;
 
@@ -67,18 +64,18 @@ public class LevelGenerator : MonoBehaviour
         startPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
         goalPos = new Vector3(lengthOfPath / DIVIDER, 0, lengthOfPath / DIVIDER);
 
+
         float distance;
         startPos = GenerateStartPosition(startPos);
         do
         {
             goalPos = GenerateStartPosition(goalPos);
-            distance = (goalPos.x - startPos.x) + (goalPos.z - startPos.z);
+            distance = Math.Abs(goalPos.x - startPos.x) + Math.Abs(goalPos.z - startPos.z);
 
         } while (distance % 2 != 0 || distance < 3 || distance >= 19 || OutOfBounds(goalPos) || OutOfBounds(startPos)); //|| AccrossFromGoal(startPos));
-
-        //Add start and goal position to position list
+        #endregion
+        //Add start to position list and assign right property
         AddPositionToList(startPos);
-
         tilePos[(int)goalPos.x, (int)goalPos.z] = 3;
 
         //Algorithm - Create Path from start to goal position
