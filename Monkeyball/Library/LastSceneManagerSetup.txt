@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/PCG/PCG.unity
+- path: Assets/PCG/Scenes/PCG.unity
   isLoaded: 1
   isActive: 1
